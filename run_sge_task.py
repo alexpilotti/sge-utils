@@ -41,7 +41,7 @@ with drmaa.Session() as s:
     # jt.errorPath = ':/dev/stderr'
 
     job_id = s.runJob(jt)
-    print(f"job \"{jt.jobName}\" scheduled with id: {job_id}", flush=True)
+    print(f"Job \"{jt.jobName}\" scheduled with id: {job_id}", flush=True)
     print(f"Log file: {log_path}", flush=True)
 
     # Wait for the job to complete and get the JobInfo
