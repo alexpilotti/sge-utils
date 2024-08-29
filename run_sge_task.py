@@ -14,8 +14,9 @@ def _copy_file_to_stdout(file_path):
 
 
 job_name = sys.argv[1]
-script_path = sys.argv[2]
-script_args = sys.argv[3:]
+native_specs = sys.argv[2]
+script_path = sys.argv[3]
+script_args = sys.argv[4:]
 
 if not os.path.isfile(script_path):
     print(f"Script \"{script_path}\" does not exist")
@@ -27,7 +28,7 @@ with drmaa.Session() as s:
     jt.remoteCommand = os.path.abspath(script_path)
     jt.args = script_args
     jt.joinFiles = True
-    jt.nativeSpecification = "-l tmem=4G -l h_rt=19:00:00 -R y -l gpu=True -pe gpu 2 -l gpu_type=a40 -l tscratch=50G"
+    jt.nativeSpecification = native_specs
     jt.jobName = job_name
 
     jt.workingDirectory = os.path.dirname(jt.remoteCommand)
