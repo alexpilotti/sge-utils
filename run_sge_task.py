@@ -27,7 +27,7 @@ with drmaa.Session() as s:
     jt.remoteCommand = os.path.abspath(script_path)
     jt.args = script_args
     jt.joinFiles = True
-    jt.nativeSpecification = "-l tmem=4G -l h_rt=19:00:00 -R y -l gpu=True -pe gpu 2 -l tscratch=50G"
+    jt.nativeSpecification = "-l tmem=4G -l h_rt=19:00:00 -R y -l gpu=True -pe gpu 2 -l gpu_type=a40 -l tscratch=50G"
     jt.jobName = job_name
 
     jt.workingDirectory = os.path.dirname(jt.remoteCommand)
