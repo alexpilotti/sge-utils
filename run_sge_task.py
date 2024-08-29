@@ -35,6 +35,8 @@ with drmaa.Session() as s:
 
     ts = datetime.now().strftime("%y%m%d_%H%M%S")
     log_path = os.path.join(jt.workingDirectory, f"{jt.jobName}_{ts}.txt")
+    # Create empty log file if it doesn't exist, truncate otherwise
+    open(log_path, 'w').close()
 
     jt.outputPath = ":" + log_path
 
