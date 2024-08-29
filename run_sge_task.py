@@ -1,7 +1,17 @@
+from datetime import datetime
 import os
 import sys
 
 import drmaa
+
+
+def _copy_file_to_stdout(file_path):
+  with open(file_path, 'rb') as file:
+    file_fd = file.fileno()
+    stdout_fd = sys.stdout.fileno()
+    file_size = os.path.getsize(file_path)
+    os.sendfile(stdout_fd, file_fd, 0, file_size)
+
 
 job_name = sys.argv[1]
 script_path = sys.argv[2]
@@ -21,16 +31,24 @@ with drmaa.Session() as s:
     jt.jobName = job_name
 
     jt.workingDirectory = os.path.dirname(jt.remoteCommand)
-    #jt.outputPath = ":" + os.path.join(jt.workingDirectory, f"{jt.jobName}.txt")
+
+    ts = datetime.now().strftime("%y%m%d_%H%M%S")
+    log_path = os.path.join(jt.workingDirectory, f"{jt.jobName}_{ts}.txt")
+
+    jt.outputPath = ":" + log_path
 
     # jt.outputPath = ':/dev/stdout'
     # jt.errorPath = ':/dev/stderr'
 
     job_id = s.runJob(jt)
     print(f"job \"{jt.jobName}\" scheduled with id: {job_id}", flush=True)
+    print(f"Log file: {log_path}", flush=True)
 
     # Wait for the job to complete and get the JobInfo
     job_info = s.wait(job_id, drmaa.Session.TIMEOUT_WAIT_FOREVER)
+
+    _copy_file_to_stdout(log_path)
+    os.remove(log_path)
 
     # Check if the job finished normally and get the exit status
     if job_info.hasExited:
